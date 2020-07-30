@@ -158,7 +158,7 @@ class CurrentChoreResponse(object):
         self._chore_id = parse_int(parsed_json.get('chore_id'), None)
         self._last_tracked_time = parse_date(parsed_json.get('last_tracked_time'))
         self._next_estimated_execution_time = parse_date(parsed_json.get('next_estimated_execution_time'))
-        self._next_execution_assigned_to_user_id = parse_date(parsed_json.get('next_execution_assigned_to_user_id'))
+        self._next_execution_assigned_to_user_id = parse_int(parsed_json.get('next_execution_assigned_to_user_id'))
 
     @property
     def chore_id(self) -> int:
