@@ -27,7 +27,7 @@ class ShoppingListItem(object):
     @property
     def id(self) -> int:
         return self._id
-    
+
     @property
     def product_id(self) -> int:
         return self._product_id
@@ -55,15 +55,15 @@ class LocationData(object):
         self._name = parsed_json.get('name')
         self._description = parsed_json.get('description')
         self._row_created_timestamp = parse_date(parsed_json.get('row_created_timestamp'))
-        
+
     @property
     def id(self) -> int:
         return self._id
-        
+
     @property
     def name(self) -> str:
         return self._name
-        
+
     @property
     def description(self) -> str:
         return self._description
@@ -95,7 +95,7 @@ class ProductData(object):
     @property
     def id(self) -> int:
         return self._id
-        
+
     @property
     def product_group_id(self) -> int:
         return self._product_group_id
@@ -158,6 +158,7 @@ class CurrentChoreResponse(object):
         self._chore_id = parse_int(parsed_json.get('chore_id'), None)
         self._last_tracked_time = parse_date(parsed_json.get('last_tracked_time'))
         self._next_estimated_execution_time = parse_date(parsed_json.get('next_estimated_execution_time'))
+        self._next_execution_assigned_to_user_id = parse_date(parsed_json.get('next_execution_assigned_to_user_id'))
 
     @property
     def chore_id(self) -> int:
@@ -171,6 +172,9 @@ class CurrentChoreResponse(object):
     def next_estimated_execution_time(self) -> datetime:
         return self._next_estimated_execution_time
 
+    @property
+    def next_execution_assigned_to_user_id(self) -> int:
+        return self._next_execution_assigned_to_user_id
 
 
 class CurrentStockResponse(object):
@@ -179,7 +183,7 @@ class CurrentStockResponse(object):
         self._amount = parse_float(parsed_json.get('amount'))
         self._best_before_date = parse_date(parsed_json.get('best_before_date'))
         self._amount_opened = parse_float(parsed_json.get('amount_opened'))
-        
+
     @property
     def product_id(self) -> int:
         return self._product_id
@@ -423,7 +427,7 @@ class GrocyApiClient(object):
         }
 
         self._do_post_request(f"stock/products/{product_id}/consume", data)
-        
+
     def get_shopping_list(self) -> List[ShoppingListItem]:
         parsed_json = self._do_get_request("objects/shopping_list")
         return [ShoppingListItem(response) for response in parsed_json]
@@ -434,7 +438,7 @@ class GrocyApiClient(object):
         }
 
         self._do_post_request("stock/shoppinglist/add-missing-products", data)
-    
+
     def add_product_to_shopping_list(self, product_id: int, shopping_list_id: int = 1, amount: int = 1):
         data = {
             "product_id": product_id,
@@ -442,14 +446,14 @@ class GrocyApiClient(object):
             "product_amount": amount
         }
         self._do_post_request("stock/shoppinglist/add-product", data)
-    
+
     def clear_shopping_list(self, shopping_list_id: int = 1):
         data = {
             "list_id": shopping_list_id
         }
 
         self._do_post_request("stock/shoppinglist/clear", data)
-            
+
     def remove_product_in_shopping_list(self, product_id: int, shopping_list_id: int = 1, amount: int = 1):
         data = {
             "product_id": product_id,
@@ -457,7 +461,7 @@ class GrocyApiClient(object):
             "product_amount": amount
         }
         self._do_post_request("stock/shoppinglist/remove-product", data)
-        
+
     def get_product_groups(self) -> List[LocationData]:
         parsed_json = self._do_get_request("objects/product_groups")
         return [LocationData(response) for response in parsed_json]
@@ -467,16 +471,16 @@ class GrocyApiClient(object):
         req_url = "files/productpictures/" + str(b64fn, "utf-8")
         with open(pic_path,'rb') as pic:
             self._do_put_request(req_url, pic)
-            
+
     def update_product_pic(self, product_id: int):
         pic_name = f"{product_id}.jpg"
         data = { "picture_file_name":  pic_name }
         self._do_put_request(f"objects/products/{product_id}", data)
-            
+
     def get_userfields(self, entity: str, object_id: int):
         url = f"userfields/{entity}/{object_id}"
         return self._do_get_request(url)
-        
+
     def set_userfields(self, entity: str, object_id: int, key: str, value):
         data = {
             key: value
